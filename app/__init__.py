@@ -10,7 +10,7 @@ from instance.config import app_config
 db = SQLAlchemy()
 
 def create_app(config_name):
-    from api.models import Bucketlist
+    from app.models import Bucketlist
 
     app = FlaskAPI(__name__, instance_relative_config=True)
     app.config.from_object(app_config[config_name])
@@ -25,6 +25,7 @@ def create_app(config_name):
 
     @app.route('/bucketlists/', methods=['POST', 'GET'])
     def bucketlists():
+        # POST
         if request.method == 'POST':
             name = str(request.data.get('name', ''))
             if name:
@@ -51,6 +52,43 @@ def create_app(config_name):
                 }
                 results.append(obj)
             response = jsonify(results)
+            response.status_code = 200
+            return response
+
+    @app.route('/bucketlists/<int:id>', methods=['GET', 'PUT', 'DELETE'])
+    def bucketlist_manipulation(id, **kwargs):
+        # retrieve a bucket list using its ID
+        bucketlist = Bucketlist.query.filter_by(id = id).first()
+        if not bucketlist:
+            # This means there is no bucketlist stored -- Throw and HTTPException error with a 404 message
+            abort(404)
+        if request.method == 'DELETE':
+            bucketlist.delete()
+            return {
+            "message": "Bucketlist {} deleted successfully".format(bucketlist.id)
+            }, 200
+
+        elif request.method == "PUT":
+            name = str(request.data.get('name', ''))
+            bucketlist.name = name
+            bucketlist.save()
+            response = jsonify({
+                'id': bucketlist.id,
+                'name': bucketlist.name,
+                'date_created': bucketlist.date_created,
+                'date_modified': bucketlist.date_modified
+
+            })
+            response.status_code = 200
+            return response
+        else:
+            # Get
+            response = jsonify({
+                'id': bucketlist.id,
+                'name': bucketlist.name,
+                'date_created': bucketlist.date_created,
+                'date_modified': bucketlist.date_modified
+            })
             response.status_code = 200
             return response
 
