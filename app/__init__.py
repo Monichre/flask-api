@@ -57,8 +57,10 @@ def create_app(config_name):
 
     @app.route('/bucketlists/<int:id>', methods=['GET', 'PUT', 'DELETE'])
     def bucketlist_manipulation(id, **kwargs):
-        # retrieve a bucket list using its ID
+
+        # Retrieve a bucket list using its ID
         bucketlist = Bucketlist.query.filter_by(id = id).first()
+
         if not bucketlist:
             # This means there is no bucketlist stored -- Throw and HTTPException error with a 404 message
             abort(404)
