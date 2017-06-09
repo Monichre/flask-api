@@ -1,3 +1,4 @@
+# app/__init__.py
 from flask_api import FlaskAPI
 from flask_sqlalchemy import SQLAlchemy
 from flask import request, jsonify, abort
@@ -93,5 +94,9 @@ def create_app(config_name):
             })
             response.status_code = 200
             return response
+
+    # Import the authentication blueprint and register it on the app
+    from .auth import auth_blueprint
+    app.register_blueprint(auth_blueprint)
 
     return app
