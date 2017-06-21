@@ -37,7 +37,11 @@ class RegistrationView(MethodView):
             response = {
                 'message': 'User already exists. Please log in'
             }
-            return make_response(jsonify(response)), 202
+            data = {
+
+            }
+            return make_response(request.data), 202
+
 
 class LoginView(MethodView):
 
