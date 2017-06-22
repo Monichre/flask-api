@@ -2,12 +2,16 @@ from app import db
 from flask_bcrypt import Bcrypt
 import jwt
 from datetime import datetime, timedelta
+from instance.config import app_config
 
 # --------------------------------
 # -- User
 # --------------------------------
 
+
 class User(db.Model):
+
+
 
     __tablename__ = 'users'
 
@@ -34,9 +38,9 @@ class User(db.Model):
     def generate_token(self, user_id):
 
         try:
-            # Set up a payload with an experiation time
+            # Set up a payload with an experation time
             payload = {
-                'exp': datetime.utc.now() + timedelta(minutes=5),
+                'exp': datetime.utcnow() + timedelta(minutes=5),
                 'iat': datetime.utcnow(),
                 'sub': user_id
             }
@@ -44,7 +48,7 @@ class User(db.Model):
             # Create the byte string token using the payload and secret key
             jwt_string = jwt.encode(
                 payload,
-                current_app.config.get('SECRET'),
+                app_config.get('SECRET'),
                 algorithm='HS256'
             )
             return jwt_string
@@ -58,7 +62,7 @@ class User(db.Model):
     def decode_token(token):
 
         try:
-            payload = jwt.decode(token, current_app.config.get('SECRET'))
+            payload = jwt.decode(token, app_config.get('SECRET'))
             return payload['sub']
 
         except jwt.ExpiredSignatureError:

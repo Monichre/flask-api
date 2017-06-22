@@ -1,3 +1,4 @@
+import logging
 from . import auth_blueprint
 from flask.views import MethodView
 from flask import make_response, request, jsonify
@@ -50,16 +51,17 @@ class LoginView(MethodView):
 
         # Get the user by their email
         try:
-            user= User.query.filter_by(email=request.data['email']).first()
+            user = User.query.filter_by(email=request.data['email']).first()
 
             # Authenticate the user using their password
             if user and user.password_is_valid(request.data['password']):
                 # Generate the access token
                 access_token = user.generate_token(user.id)
+                print(access_token)
                 if access_token:
                     response = {
                         'message': "You logged in successfully",
-                        "access_token": access_token.decode()
+                        "access_token": decode(access_token)
                     }
                     return make_response(jsonify(response)), 200
             else:
